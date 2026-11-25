@@ -3,18 +3,20 @@
 #include <utility>
 
 #include "activities/Activity.h"
+#include "util/SleepWakePolicy.h"
 
 class Bitmap;
 
 class SleepActivity final : public Activity {
  public:
   explicit SleepActivity(GfxRenderer& renderer, MappedInputManager& mappedInput, bool canSnapshotOverlayBackground,
-                         std::string currentBookPath = {}, bool fromTimeout = false,
+                         std::string currentBookPath = {},
+                         SleepWakePolicy::SleepTrigger trigger = SleepWakePolicy::SleepTrigger::Manual,
                          GfxRenderer::Orientation sleepPopupOrientation = GfxRenderer::Orientation::Portrait)
       : Activity("Sleep", renderer, mappedInput),
         canSnapshotOverlayBackground(canSnapshotOverlayBackground),
         currentBookPath(std::move(currentBookPath)),
-        fromTimeout(fromTimeout),
+        trigger(trigger),
         sleepPopupOrientation(sleepPopupOrientation) {}
   void onEnter() override;
   void showSleepPopup();
@@ -49,6 +51,6 @@ class SleepActivity final : public Activity {
   bool overlayBackgroundAvailable = false;
   bool sleepPopupShown = false;
   std::string currentBookPath;
-  bool fromTimeout = false;
+  SleepWakePolicy::SleepTrigger trigger = SleepWakePolicy::SleepTrigger::Manual;
   GfxRenderer::Orientation sleepPopupOrientation = GfxRenderer::Orientation::Portrait;
 };

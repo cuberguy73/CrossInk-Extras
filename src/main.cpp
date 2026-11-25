@@ -646,6 +646,9 @@ bool handleGlobalPowerButtonAction(const CrossPointSettings::SHORT_PWRBTN action
     case CrossPointSettings::SHORT_PWRBTN::SLEEP_ONLY:
       enterDeepSleep();
       return true;
+    case CrossPointSettings::SHORT_PWRBTN::QUICK_SLEEP:
+      enterDeepSleep(SleepWakePolicy::SleepTrigger::QuickSleep);
+      return true;
     case CrossPointSettings::SHORT_PWRBTN::WAKE_ONLY:
       return true;
     case CrossPointSettings::SHORT_PWRBTN::QUICK_LOCK:
@@ -1233,14 +1236,14 @@ static bool holdSleepWhileUsbPowered(bool monochrome = false) {
 }
 #endif
 
-void enterDeepSleep(bool fromTimeout) {
+void enterDeepSleep(const SleepWakePolicy::SleepTrigger trigger) {
 #ifndef SIMULATOR
   gpio.stopButtonCapture();
 #endif
   HalPowerManager::Lock powerLock;  // Ensure we are at normal CPU frequency for sleep preparation
   APP_STATE.lastSleepFromReader = activityManager.isReaderActivity();
 
-  const bool isQuickResumeSleep = SETTINGS.usesQuickResumeSleep(fromTimeout);
+  const bool isQuickResumeSleep = SETTINGS.usesQuickResumeSleep(trigger);
   // Every sleep mode leaves a complete retained frame on the e-ink panel. Keep
   // it visible until the first useful reader or Home paint replaces it.
   APP_STATE.showBootScreen = false;
@@ -1248,7 +1251,7 @@ void enterDeepSleep(bool fromTimeout) {
   // Commit to sleeping before goToSleep() runs the outgoing activity's onExit():
   // a WiFi activity would otherwise silentRestart() here and reboot instead.
   deepSleepInProgress = true;
-  [[maybe_unused]] const bool monochromeSleepFrame = activityManager.goToSleep(fromTimeout);
+  [[maybe_unused]] const bool monochromeSleepFrame = activityManager.goToSleep(trigger);
   trustedtime::note();
   // Reader exit may already have saved this state. Save after the sleep screen
   // appears, skipping an unchanged snapshot while still retrying failed saves.
@@ -2163,7 +2166,7 @@ void loop() {
     if (sleepTimeoutMs > 0 && buttonShortcutController.shouldQuickLockSleep(millis(), sleepTimeoutMs)) {
       LOG_DBG("SLP", "Quick Lock timeout triggered after %lu ms", sleepTimeoutMs);
       APP_STATE.quickLockResumePending = true;
-      enterDeepSleep(true);
+      enterDeepSleep(SleepWakePolicy::SleepTrigger::Timeout);
       // The simulator's deep sleep returns, unlike hardware. Keep its next
       // test loop from treating the marker as a real reboot resume.
 #ifdef SIMULATOR
@@ -2197,7 +2200,7 @@ void loop() {
   const unsigned long sleepTimeoutMs = SETTINGS.getSleepTimeoutMs();
   if (sleepTimeoutMs > 0 && millis() - lastActivityTime >= sleepTimeoutMs) {
     LOG_DBG("SLP", "Auto-sleep triggered after %lu ms of inactivity", sleepTimeoutMs);
-    enterDeepSleep(true);
+    enterDeepSleep(SleepWakePolicy::SleepTrigger::Timeout);
     // This should never be hit as `enterDeepSleep` calls esp_deep_sleep_start
     // In the simulator, deep sleep is a no-op and returns — reset the timer so
     // the main loop does not immediately re-trigger auto-sleep.

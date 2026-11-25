@@ -1164,13 +1164,13 @@ void ActivityManager::goToReaderAndRunMenuAction(std::string path, const uint8_t
   goToReader(std::move(path));
 }
 
-bool ActivityManager::goToSleep(bool fromTimeout) {
+bool ActivityManager::goToSleep(const SleepWakePolicy::SleepTrigger trigger) {
   // Hold the visible page steady from the first sleep indication through reader saves.
   RenderLock lock;
   const bool readerPage = canSnapshotForSleepOverlay();
-  const bool quickResume = SETTINGS.usesQuickResumeSleep(fromTimeout);
+  const bool quickResume = SETTINGS.usesQuickResumeSleep(trigger);
   auto sleepActivity = makeUniqueNoThrow<SleepActivity>(renderer, mappedInput, readerPage, getCurrentBookPath(),
-                                                        fromTimeout, renderer.getOrientation());
+                                                        trigger, renderer.getOrientation());
   // Image viewers can repaint on exit. Only these activities retain an early final frame.
   const bool fromReaderOrHome = readerPage || isHomeActivity();
   const bool earlyMoon = sleepActivity && quickResume && fromReaderOrHome;

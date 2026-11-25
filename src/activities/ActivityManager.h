@@ -181,7 +181,7 @@ class ActivityManager {
                   bool cleanImageBaseOnEntry = false, bool keepWakeFrame = false);
   void goToReaderAndRunMenuAction(std::string path, uint8_t action);
   // Returns true only when sleep rendered a known complete B/W frame.
-  bool goToSleep(bool fromTimeout = false);
+  bool goToSleep(SleepWakePolicy::SleepTrigger trigger = SleepWakePolicy::SleepTrigger::Manual);
   void goToBoot();
   void goToFullScreenMessage(StrId title, StrId message);
   void goToCrashReport();

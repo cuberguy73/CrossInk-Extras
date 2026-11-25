@@ -13,6 +13,7 @@
 #include "ReaderFontSizeStep.h"
 #include "TiltSensitivity.h"
 #include "util/ReaderStatusBarConfig.h"
+#include "util/SleepWakePolicy.h"
 
 class CrossPointSettings : public PersistableStore<CrossPointSettings> {
  private:
@@ -296,6 +297,8 @@ class CrossPointSettings : public PersistableStore<CrossPointSettings> {
     SELECT_CHAPTER = 38,
     ROTATE_FLIP = 39,
     TOGGLE_PAGE_TURN_GESTURES = 40,
+    // Power-only: sleep with the Quick Resume screen regardless of Sleep Screen.
+    QUICK_SLEEP = 41,
     SHORT_PWRBTN_COUNT
   };
 
@@ -783,10 +786,13 @@ class CrossPointSettings : public PersistableStore<CrossPointSettings> {
     return shortPowerPressWakes() ? POWER_BUTTON_WAKE_SHORT_MS : POWER_BUTTON_WAKE_LONG_MS;
   }
 
-  bool shortPowerPressWakes() const { return shortPwrBtn == SLEEP || shortPwrBtn == WAKE_ONLY; }
+  bool shortPowerPressWakes() const {
+    return shortPwrBtn == SLEEP || shortPwrBtn == WAKE_ONLY || shortPwrBtn == QUICK_SLEEP;
+  }
 
-  bool usesQuickResumeSleep(bool fromTimeout) const {
-    return sleepScreen == QUICK_RESUME || (fromTimeout && quickResumeSleepScreen == QUICK_RESUME_AFTER_TIMEOUT);
+  bool usesQuickResumeSleep(const SleepWakePolicy::SleepTrigger trigger) const {
+    return SleepWakePolicy::usesQuickResume(trigger, sleepScreen == QUICK_RESUME,
+                                            quickResumeSleepScreen == QUICK_RESUME_AFTER_TIMEOUT);
   }
 
   bool shouldTrackReadingStats() const { return trackReadingStats != 0; }

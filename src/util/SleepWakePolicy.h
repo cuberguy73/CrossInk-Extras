@@ -12,6 +12,20 @@ enum class Resume : uint8_t {
   SplashlessWake,
 };
 
+// What started a sleep. Quick Sleep is an explicit Power-button request for the
+// Quick Resume screen; Timeout honours "Quick Resume on Timeout".
+enum class SleepTrigger : uint8_t {
+  Manual,
+  Timeout,
+  QuickSleep,
+};
+
+constexpr bool usesQuickResume(const SleepTrigger trigger, const bool quickResumeScreen,
+                               const bool quickResumeAfterTimeout) {
+  return trigger == SleepTrigger::QuickSleep || quickResumeScreen ||
+         (trigger == SleepTrigger::Timeout && quickResumeAfterTimeout);
+}
+
 constexpr bool hasValidSavedFrame(const bool exists, const size_t actualSize, const size_t expectedSize) {
   return exists && actualSize == expectedSize;
 }

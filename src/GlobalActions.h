@@ -24,6 +24,7 @@ inline bool isPowerButtonActionAvailableOutsideReader(const CrossPointSettings::
     case CrossPointSettings::SHORT_PWRBTN::SLEEP:
     case CrossPointSettings::SHORT_PWRBTN::SLEEP_ONLY:
     case CrossPointSettings::SHORT_PWRBTN::WAKE_ONLY:
+    case CrossPointSettings::SHORT_PWRBTN::QUICK_SLEEP:
     case CrossPointSettings::SHORT_PWRBTN::QUICK_LOCK:
     case CrossPointSettings::SHORT_PWRBTN::FORCE_REFRESH:
     case CrossPointSettings::SHORT_PWRBTN::SYNC_PROGRESS:
@@ -62,7 +63,7 @@ inline bool isPowerButtonActionAvailableOutsideReader(const CrossPointSettings::
   }
 }
 
-void enterDeepSleep(bool fromTimeout = false);
+void enterDeepSleep(SleepWakePolicy::SleepTrigger trigger = SleepWakePolicy::SleepTrigger::Manual);
 bool handleGlobalPowerButtonAction(CrossPointSettings::SHORT_PWRBTN action,
                                    QuickLockTrigger quickLockTrigger = QuickLockTrigger::None);
 bool dispatchShortcutAction(CrossPointSettings::SHORT_PWRBTN action);

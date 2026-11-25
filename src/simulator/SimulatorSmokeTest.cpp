@@ -5525,7 +5525,8 @@ class SimulatorSmokeTest {
                                         [key](const SettingInfo& candidate) { return settingKeyIs(candidate, key); });
       if (setting == allSettings.end()) fail("Power shortcut setting is missing: %s", key);
       for (const auto [action, label] : {std::pair{CrossPointSettings::SLEEP_ONLY, StrId::STR_SLEEP},
-                                         std::pair{CrossPointSettings::WAKE_ONLY, StrId::STR_WAKE}}) {
+                                         std::pair{CrossPointSettings::WAKE_ONLY, StrId::STR_WAKE},
+                                         std::pair{CrossPointSettings::QUICK_SLEEP, StrId::STR_QUICK_SLEEP}}) {
         const auto choice = std::find(setting->enumRawValues.begin(), setting->enumRawValues.end(), action);
         if (choice == setting->enumRawValues.end() ||
             sideButtonOptionLabel(*setting, static_cast<uint8_t>(choice - setting->enumRawValues.begin())) !=
@@ -5537,7 +5538,8 @@ class SimulatorSmokeTest {
     const uint8_t savedShortPowerAction = SETTINGS.shortPwrBtn;
     for (const auto [action, wakes] :
          {std::pair{CrossPointSettings::IGNORE, false}, std::pair{CrossPointSettings::SLEEP_ONLY, false},
-          std::pair{CrossPointSettings::WAKE_ONLY, true}, std::pair{CrossPointSettings::SLEEP, true}}) {
+          std::pair{CrossPointSettings::WAKE_ONLY, true}, std::pair{CrossPointSettings::SLEEP, true},
+          std::pair{CrossPointSettings::QUICK_SLEEP, true}}) {
       SETTINGS.shortPwrBtn = action;
       if (SETTINGS.shortPowerPressWakes() != wakes) fail("Short Power wake policy does not match its shortcut");
     }

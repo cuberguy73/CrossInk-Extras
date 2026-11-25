@@ -574,7 +574,7 @@ bool selectRandomSleepImage(SleepImageMode mode, SleepImageSelection& selection,
 void SleepActivity::onEnter() {
   Activity::onEnter();
   monochromeFrame = false;
-  const bool renderQuickResume = SETTINGS.usesQuickResumeSleep(fromTimeout);
+  const bool renderQuickResume = SETTINGS.usesQuickResumeSleep(trigger);
 
   // Sleep screens draw directly, outside ActivityManager's normal render path.
   // Quick Resume and Page Overlay retain the current screen, including its
@@ -634,7 +634,7 @@ void SleepActivity::showSleepPopup() {
   const auto orientation = renderer.getOrientation();
   if (APP_STATE.lastSleepFromReader) renderer.setOrientation(sleepPopupOrientation);
   // Leave only the panel showing the popup when the final screen needs these pixels.
-  const bool quickResume = SETTINGS.usesQuickResumeSleep(fromTimeout);
+  const bool quickResume = SETTINGS.usesQuickResumeSleep(trigger);
   const bool overlay = SETTINGS.sleepScreen == CrossPointSettings::OVERLAY && !quickResume;
   const char* message = tr(STR_ENTERING_SLEEP);
   if (GUI.drawPopup(renderer, message, overlay || quickResume).width > 0) {
@@ -651,7 +651,7 @@ void SleepActivity::showSleepPopup() {
 
 bool SleepActivity::rendersBeforeExit() const {
   // Quick Resume handles a visible reader page before plugin preparation.
-  if (SETTINGS.usesQuickResumeSleep(fromTimeout)) return false;
+  if (SETTINGS.usesQuickResumeSleep(trigger)) return false;
   // Keep the reader's cleanup first on devices without PSRAM. Covers and custom
   // images can otherwise compete with the reader for scarce internal memory.
   if (!psramHeapAvailable()) return false;

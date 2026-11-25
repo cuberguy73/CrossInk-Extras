@@ -575,6 +575,8 @@ inline void appendShortcutOptions(SettingInfo& setting, const ShortcutOptionCata
       setting.enumRawValues.push_back(CrossPointSettings::SLEEP_ONLY);
       setting.enumValues.push_back(StrId::STR_WAKE);
       setting.enumRawValues.push_back(CrossPointSettings::WAKE_ONLY);
+      setting.enumValues.push_back(StrId::STR_QUICK_SLEEP);
+      setting.enumRawValues.push_back(CrossPointSettings::QUICK_SLEEP);
     }
   }
 }

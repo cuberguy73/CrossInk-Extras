@@ -39,3 +39,32 @@ TEST(SleepWakePolicy, MissingOrWrongSizedFrameIsInvalid) {
   EXPECT_FALSE(SleepWakePolicy::hasValidSavedFrame(/*exists=*/true, kExpectedFrameBytes - 1, kExpectedFrameBytes));
   EXPECT_FALSE(SleepWakePolicy::hasValidSavedFrame(/*exists=*/true, kExpectedFrameBytes + 1, kExpectedFrameBytes));
 }
+
+using SleepWakePolicy::SleepTrigger;
+
+TEST(SleepWakePolicy, QuickSleepAlwaysUsesQuickResume) {
+  for (const bool screen : {false, true}) {
+    for (const bool afterTimeout : {false, true}) {
+      EXPECT_TRUE(SleepWakePolicy::usesQuickResume(SleepTrigger::QuickSleep, screen, afterTimeout));
+    }
+  }
+}
+
+TEST(SleepWakePolicy, ManualSleepUsesQuickResumeOnlyWhenItIsTheSleepScreen) {
+  EXPECT_FALSE(SleepWakePolicy::usesQuickResume(SleepTrigger::Manual, /*quickResumeScreen=*/false,
+                                                /*quickResumeAfterTimeout=*/false));
+  // A long-press Sleep stays a full sleep even when timeouts use Quick Resume.
+  EXPECT_FALSE(SleepWakePolicy::usesQuickResume(SleepTrigger::Manual, /*quickResumeScreen=*/false,
+                                                /*quickResumeAfterTimeout=*/true));
+  EXPECT_TRUE(SleepWakePolicy::usesQuickResume(SleepTrigger::Manual, /*quickResumeScreen=*/true,
+                                               /*quickResumeAfterTimeout=*/false));
+}
+
+TEST(SleepWakePolicy, TimeoutSleepHonoursQuickResumeOnTimeout) {
+  EXPECT_FALSE(SleepWakePolicy::usesQuickResume(SleepTrigger::Timeout, /*quickResumeScreen=*/false,
+                                                /*quickResumeAfterTimeout=*/false));
+  EXPECT_TRUE(SleepWakePolicy::usesQuickResume(SleepTrigger::Timeout, /*quickResumeScreen=*/false,
+                                               /*quickResumeAfterTimeout=*/true));
+  EXPECT_TRUE(SleepWakePolicy::usesQuickResume(SleepTrigger::Timeout, /*quickResumeScreen=*/true,
+                                               /*quickResumeAfterTimeout=*/false));
+}
