@@ -68,3 +68,8 @@ TEST(SleepWakePolicy, TimeoutSleepHonoursQuickResumeOnTimeout) {
   EXPECT_TRUE(SleepWakePolicy::usesQuickResume(SleepTrigger::Timeout, /*quickResumeScreen=*/true,
                                                /*quickResumeAfterTimeout=*/false));
 }
+
+TEST(SleepWakePolicy, QuickSleepKeepsOnlyBookPages) {
+  EXPECT_EQ(SleepWakePolicy::quickSleepTrigger(/*bookPageVisible=*/true), SleepTrigger::QuickSleep);
+  EXPECT_EQ(SleepWakePolicy::quickSleepTrigger(/*bookPageVisible=*/false), SleepTrigger::Manual);
+}

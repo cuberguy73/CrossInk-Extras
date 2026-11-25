@@ -2,7 +2,7 @@
 
 ### Added
 
-- Set the Power button's short press to `Quick Sleep` to sleep with the Quick Resume screen, while a long press (Sleep by default) still shows your normal sleep screen. A short press also wakes the device. The option is off by default.
+- Set the Power button’s short press to `Quick Sleep` to keep your current book page on screen while asleep (Quick Resume). Outside a book it sleeps normally, and a long press (Sleep by default) still shows your normal sleep screen. A short press also wakes the device. The option is off by default.
 
 ## [v2.0.0] - 2026-11-24
 

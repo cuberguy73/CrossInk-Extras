@@ -26,6 +26,12 @@ constexpr bool usesQuickResume(const SleepTrigger trigger, const bool quickResum
          (trigger == SleepTrigger::Timeout && quickResumeAfterTimeout);
 }
 
+// Quick Sleep keeps a book page on screen. Anywhere else (Home, menus, a
+// reader overlay) a frozen screen is not worth keeping, so sleep normally.
+constexpr SleepTrigger quickSleepTrigger(const bool bookPageVisible) {
+  return bookPageVisible ? SleepTrigger::QuickSleep : SleepTrigger::Manual;
+}
+
 constexpr bool hasValidSavedFrame(const bool exists, const size_t actualSize, const size_t expectedSize) {
   return exists && actualSize == expectedSize;
 }

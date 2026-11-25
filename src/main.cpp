@@ -647,7 +647,7 @@ bool handleGlobalPowerButtonAction(const CrossPointSettings::SHORT_PWRBTN action
       enterDeepSleep();
       return true;
     case CrossPointSettings::SHORT_PWRBTN::QUICK_SLEEP:
-      enterDeepSleep(SleepWakePolicy::SleepTrigger::QuickSleep);
+      enterDeepSleep(SleepWakePolicy::quickSleepTrigger(activityManager.canSnapshotForSleepOverlay()));
       return true;
     case CrossPointSettings::SHORT_PWRBTN::WAKE_ONLY:
       return true;

@@ -297,7 +297,8 @@ class CrossPointSettings : public PersistableStore<CrossPointSettings> {
     SELECT_CHAPTER = 38,
     ROTATE_FLIP = 39,
     TOGGLE_PAGE_TURN_GESTURES = 40,
-    // Power-only: sleep with the Quick Resume screen regardless of Sleep Screen.
+    // Power-only: on a book page, sleep with the Quick Resume screen regardless
+    // of Sleep Screen; elsewhere, sleep normally.
     QUICK_SLEEP = 41,
     SHORT_PWRBTN_COUNT
   };
